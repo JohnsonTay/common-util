@@ -11,6 +11,7 @@
 package com.cly.common.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ import java.util.List;
 public class StringUtils {
     /** 空的 {@link String} 数组 */
     public static final String[] EMPTY_STRINGS = {};
+    /** 空字符串 */
+    public static final String EMPTY_STRING = "";
 
     /*
 	 * ====================================
@@ -401,5 +404,198 @@ public class StringUtils {
         return (String[]) list.toArray(new String[list.size()]);
     }
 
+    /*
+	 * ==============================
+	 * 字符串连接函数
+	 * ==============================
+	 * ==
+	 */
+
+    /**
+     * 将数组中的元素连接成一个字符串。
+     *
+     * <pre>
+     * StringUtils.join(null)            = null
+     * StringUtils.join([])              = ""
+     * StringUtils.join([null])          = ""
+     * StringUtils.join(["a", "b", "c"]) = "abc"
+     * StringUtils.join([null, "", "a"]) = "a"
+     * </pre>
+     *
+     * @param array 要连接的数组
+     * @return 连接后的字符串，如果原数组为<code>null</code>，则返回<code>null</code>
+     */
+    public static String join(Object[] array) {
+        return join(array, null);
+    }
+
+    /**
+     * 将数组中的元素按指定分隔符连接成一个字符串。
+     *
+     * <pre>
+     * StringUtils.join(null, *)               = null
+     * StringUtils.join([], *)                 = ""
+     * StringUtils.join([null], *)             = ""
+     * StringUtils.join(["a", "b", "c"], ';')  = "a;b;c"
+     * StringUtils.join(["a", "b", "c"], null) = "abc"
+     * StringUtils.join([null, "", "a"], ';')  = ";;a"
+     * </pre>
+     *
+     * @param array 要连接的数组
+     * @param separator 分隔符
+     * @return 连接后的字符串，如果原数组为<code>null</code>，则返回<code>null</code>
+     */
+    public static String join(Object[] array, char separator) {
+        if (array == null) {
+            return null;
+        }
+
+        int arraySize = array.length;
+        int bufSize = (arraySize == 0) ? 0 : ((((array[0] == null) ? 16 : array[0].toString()
+                .length()) + 1) * arraySize);
+        StringBuffer buf = new StringBuffer(bufSize);
+
+        for (int i = 0; i < arraySize; i++) {
+            if (i > 0) {
+                buf.append(separator);
+            }
+
+            if (array[i] != null) {
+                buf.append(array[i]);
+            }
+        }
+
+        return buf.toString();
+    }
+
+    /**
+     * 将数组中的元素按指定字符串连接成一个字符串。
+     *
+     * <pre>
+     * StringUtils.join(null, *)                = null
+     * StringUtils.join([], *)                  = ""
+     * StringUtils.join([null], *)              = ""
+     * StringUtils.join(["a", "b", "c"], "--")  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], null)  = "abc"
+     * StringUtils.join(["a", "b", "c"], "")    = "abc"
+     * StringUtils.join([null, "", "a"], ',')   = ",,a"
+     * </pre>
+     *
+     * @param array 要连接的数组
+     * @param separator 分隔符
+     * @return 连接后的字符串，如果原数组为<code>null</code>，则返回<code>null</code>
+     */
+    public static String join(Object[] array, String separator) {
+        if (array == null) {
+            return null;
+        }
+
+        if (separator == null) {
+            separator = EMPTY_STRING;
+        }
+
+        int arraySize = array.length;
+
+        // ArraySize == 0: Len = 0
+        // ArraySize > 0: Len = NofStrings *(len(firstString) + len(separator))
+        // (估计大约所有的字符串都一样长)
+        int bufSize = (arraySize == 0) ? 0 : (arraySize * (((array[0] == null) ? 16 : array[0]
+                .toString().length()) + ((separator != null) ? separator.length() : 0)));
+
+        StringBuffer buf = new StringBuffer(bufSize);
+
+        for (int i = 0; i < arraySize; i++) {
+            if ((separator != null) && (i > 0)) {
+                buf.append(separator);
+            }
+
+            if (array[i] != null) {
+                buf.append(array[i]);
+            }
+        }
+
+        return buf.toString();
+    }
+
+    /**
+     * 将<code>Iterator</code>中的元素按指定字符连接成一个字符串。
+     * <p/>
+     *
+     * <pre>
+     * StringUtils.join(null, *)                = null
+     * StringUtils.join([], *)                  = ""
+     * StringUtils.join([null], *)              = ""
+     * StringUtils.join(["a", "b", "c"], "--")  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], null)  = "abc"
+     * StringUtils.join(["a", "b", "c"], "")    = "abc"
+     * StringUtils.join([null, "", "a"], ',')   = ",,a"
+     * </pre>
+     *
+     * @param iterator 要连接的<code>Iterator</code>
+     * @param separator 分隔符
+     * @return 连接后的字符串，如果原数组为<code>null</code>，则返回<code>null</code>
+     */
+    @SuppressWarnings("rawtypes")
+    public static String join(Iterator iterator, char separator) {
+        if (iterator == null) {
+            return null;
+        }
+
+        StringBuffer buf = new StringBuffer(256); // Java默认值是16, 可能偏小
+
+        while (iterator.hasNext()) {
+            Object obj = iterator.next();
+
+            if (obj != null) {
+                buf.append(obj);
+            }
+
+            if (iterator.hasNext()) {
+                buf.append(separator);
+            }
+        }
+
+        return buf.toString();
+    }
+
+    /**
+     * 将<code>Iterator</code>中的元素按指定字符串连接成一个字符串。
+     * <p/>
+     *
+     * <pre>
+     * StringUtils.join(null, *)                = null
+     * StringUtils.join([], *)                  = ""
+     * StringUtils.join([null], *)              = ""
+     * StringUtils.join(["a", "b", "c"], "--")  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], null)  = "abc"
+     * StringUtils.join(["a", "b", "c"], "")    = "abc"
+     * StringUtils.join([null, "", "a"], ',')   = ",,a"
+     * </pre>
+     *
+     * @param iterator 要连接的<code>Iterator</code>
+     * @param separator 分隔符
+     * @return 连接后的字符串，如果原数组为<code>null</code>，则返回<code>null</code>
+     */
+    public static String join(Iterator<?> iterator, String separator) {
+        if (iterator == null) {
+            return null;
+        }
+
+        StringBuffer buf = new StringBuffer(256); // Java默认值是16, 可能偏小
+
+        while (iterator.hasNext()) {
+            Object obj = iterator.next();
+
+            if (obj != null) {
+                buf.append(obj);
+            }
+
+            if ((separator != null) && iterator.hasNext()) {
+                buf.append(separator);
+            }
+        }
+
+        return buf.toString();
+    }
 
 }
