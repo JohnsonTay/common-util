@@ -598,4 +598,627 @@ public class StringUtils {
         return buf.toString();
     }
 
+    /*
+	 * ================================
+	 * 字符串查找函数 —— 字符或字符串
+	 * ================================
+	 * ==
+	 */
+
+    /**
+     * 在字符串中查找指定字符，并返回第一个匹配的索引值。
+     *      --如果字符串为<code>null</code>或未找到，则返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOf(null, *)         = -1
+     * StringUtils.indexOf("", *)           = -1
+     * StringUtils.indexOf("aabaabaa", 'a') = 0
+     * StringUtils.indexOf("aabaabaa", 'b') = 2
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChar 要查找的字符
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOf(String str, char searchChar) {
+        if ((str == null) || (str.length() == 0)) {
+            return -1;
+        }
+
+        return str.indexOf(searchChar);
+    }
+
+    /**
+     * 在字符串中从指定位置开始查找指定字符，并返回第一个匹配的索引值。
+     *      --如果字符串为<code>null</code>或未找到，则返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOf(null, *, *)          = -1
+     * StringUtils.indexOf("", *, *)            = -1
+     * StringUtils.indexOf("aabaabaa", 'b', 0)  = 2
+     * StringUtils.indexOf("aabaabaa", 'b', 3)  = 5
+     * StringUtils.indexOf("aabaabaa", 'b', 9)  = -1
+     * StringUtils.indexOf("aabaabaa", 'b', -1) = 2
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChar 要查找的字符
+     * @param startPos 开始搜索的索引值，如果小于0，则看作0
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOf(String str, char searchChar, int startPos) {
+        if ((str == null) || (str.length() == 0)) {
+            return -1;
+        }
+
+        return str.indexOf(searchChar, startPos);
+    }
+
+    /**
+     * 在字符串中查找指定字符串，并返回第一个匹配的索引值。
+     *      --如果字符串为<code>null</code>或未找到，则返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOf(null, *)          = -1
+     * StringUtils.indexOf(*, null)          = -1
+     * StringUtils.indexOf("", "")           = 0
+     * StringUtils.indexOf("aabaabaa", "a")  = 0
+     * StringUtils.indexOf("aabaabaa", "b")  = 2
+     * StringUtils.indexOf("aabaabaa", "ab") = 1
+     * StringUtils.indexOf("aabaabaa", "")   = 0
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchStr 要查找的字符串
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOf(String str, String searchStr) {
+        if ((str == null) || (searchStr == null)) {
+            return -1;
+        }
+
+        return str.indexOf(searchStr);
+    }
+
+    /**
+     * 在字符串中查找指定字符集合中的字符，并返回第一个匹配的起始索引。
+     *      --如果字符串为<code>null</code>，则返回<code>-1</code>。
+     *      --如果字符集合为<code>null</code>或空，也返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOfAny(null, *)                = -1
+     * StringUtils.indexOfAny("", *)                  = -1
+     * StringUtils.indexOfAny(*, null)                = -1
+     * StringUtils.indexOfAny(*, [])                  = -1
+     * StringUtils.indexOfAny("zzabyycdxx",['z','a']) = 0
+     * StringUtils.indexOfAny("zzabyycdxx",['b','y']) = 3
+     * StringUtils.indexOfAny("aba", ['z'])           = -1
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChars 要搜索的字符集合
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOfAny(String str, char[] searchChars) {
+        if ((str == null) || (str.length() == 0) || (searchChars == null)
+                || (searchChars.length == 0)) {
+            return -1;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            for (int j = 0; j < searchChars.length; j++) {
+                if (searchChars[j] == ch) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * 在字符串中查找指定字符集合中的字符，并返回第一个匹配的起始索引。
+     *      --如果字符串为<code>null</code>，则返回<code>-1</code>。
+     *      --如果字符集合为<code>null</code>或空，也返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOfAny(null, *)            = -1
+     * StringUtils.indexOfAny("", *)              = -1
+     * StringUtils.indexOfAny(*, null)            = -1
+     * StringUtils.indexOfAny(*, "")              = -1
+     * StringUtils.indexOfAny("zzabyycdxx", "za") = 0
+     * StringUtils.indexOfAny("zzabyycdxx", "by") = 3
+     * StringUtils.indexOfAny("aba","z")          = -1
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChars 要搜索的字符集合
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOfAny(String str, String searchChars) {
+        if ((str == null) || (str.length() == 0) || (searchChars == null)
+                || (searchChars.length() == 0)) {
+            return -1;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            for (int j = 0; j < searchChars.length(); j++) {
+                if (searchChars.charAt(j) == ch) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * 在字符串中查找指定字符串集合中的字符串，并返回第一个匹配的起始索引。
+     *      --如果字符串为<code>null</code>，则返回<code>-1</code>。
+     *      --如果字符串集合为<code>null</code>或空，也返回<code>-1</code>。
+     *      --如果字符串集合包括<code>""</code>，并且字符串不为<code>null</code>，则返回<code>str.length()</code>
+     *
+     * <pre>
+     * StringUtils.indexOfAny(null, *)                     = -1
+     * StringUtils.indexOfAny(*, null)                     = -1
+     * StringUtils.indexOfAny(*, [])                       = -1
+     * StringUtils.indexOfAny("zzabyycdxx", ["ab","cd"])   = 2
+     * StringUtils.indexOfAny("zzabyycdxx", ["cd","ab"])   = 2
+     * StringUtils.indexOfAny("zzabyycdxx", ["mn","op"])   = -1
+     * StringUtils.indexOfAny("zzabyycdxx", ["zab","aby"]) = 1
+     * StringUtils.indexOfAny("zzabyycdxx", [""])          = 0
+     * StringUtils.indexOfAny("", [""])                    = 0
+     * StringUtils.indexOfAny("", ["a"])                   = -1
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchStrs 要搜索的字符串集合
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOfAny(String str, String[] searchStrs) {
+        if ((str == null) || (searchStrs == null)) {
+            return -1;
+        }
+
+        int sz = searchStrs.length;
+
+        // String's can't have a MAX_VALUEth index.
+        int ret = Integer.MAX_VALUE;
+
+        int tmp = 0;
+
+        for (int i = 0; i < sz; i++) {
+            String search = searchStrs[i];
+
+            if (search == null) {
+                continue;
+            }
+
+            tmp = str.indexOf(search);
+
+            if (tmp == -1) {
+                continue;
+            }
+
+            if (tmp < ret) {
+                ret = tmp;
+            }
+        }
+
+        return (ret == Integer.MAX_VALUE) ? (-1) : ret;
+    }
+
+    /**
+     * 在字符串中查找不在指定字符集合中的字符，并返回第一个匹配的起始索引。
+     *      --如果字符串为<code>null</code>，则返回<code>-1</code>。
+     *      --如果字符集合为<code>null</code>或空，也返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOfAnyBut(null, *)             = -1
+     * StringUtils.indexOfAnyBut("", *)               = -1
+     * StringUtils.indexOfAnyBut(*, null)             = -1
+     * StringUtils.indexOfAnyBut(*, [])               = -1
+     * StringUtils.indexOfAnyBut("zzabyycdxx",'za')   = 3
+     * StringUtils.indexOfAnyBut("zzabyycdxx", 'by')  = 0
+     * StringUtils.indexOfAnyBut("aba", 'ab')         = -1
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChars 要搜索的字符集合
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOfAnyBut(String str, char[] searchChars) {
+        if ((str == null) || (str.length() == 0) || (searchChars == null)
+                || (searchChars.length == 0)) {
+            return -1;
+        }
+
+        outer: for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            for (int j = 0; j < searchChars.length; j++) {
+                if (searchChars[j] == ch) {
+                    continue outer;
+                }
+            }
+
+            return i;
+        }
+
+        return -1;
+    }
+
+    /**
+     * 在字符串中查找不在指定字符集合中的字符，并返回第一个匹配的起始索引。
+     *      --如果字符串为<code>null</code>，则返回<code>-1</code>。
+     *      --如果字符集合为<code>null</code>或空，也返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.indexOfAnyBut(null, *)            = -1
+     * StringUtils.indexOfAnyBut("", *)              = -1
+     * StringUtils.indexOfAnyBut(*, null)            = -1
+     * StringUtils.indexOfAnyBut(*, "")              = -1
+     * StringUtils.indexOfAnyBut("zzabyycdxx", "za") = 3
+     * StringUtils.indexOfAnyBut("zzabyycdxx", "by") = 0
+     * StringUtils.indexOfAnyBut("aba","ab")         = -1
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChars 要搜索的字符集合
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int indexOfAnyBut(String str, String searchChars) {
+        if ((str == null) || (str.length() == 0) || (searchChars == null)
+                || (searchChars.length() == 0)) {
+            return -1;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            if (searchChars.indexOf(str.charAt(i)) < 0) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * 从字符串尾部开始查找指定字符，并返回第一个匹配的索引值。
+     *      --如果字符串为<code>null</code>或未找到，则返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.lastIndexOf(null, *)         = -1
+     * StringUtils.lastIndexOf("", *)           = -1
+     * StringUtils.lastIndexOf("aabaabaa", 'a') = 7
+     * StringUtils.lastIndexOf("aabaabaa", 'b') = 5
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChar 要查找的字符
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int lastIndexOf(String str, char searchChar) {
+        if ((str == null) || (str.length() == 0)) {
+            return -1;
+        }
+
+        return str.lastIndexOf(searchChar);
+    }
+
+    /**
+     * 从字符串尾部开始查找指定字符，并返回第一个匹配的索引值。
+     *      --如果字符串为<code>null</code>或未找到，则返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.lastIndexOf(null, *, *)          = -1
+     * StringUtils.lastIndexOf("", *,  *)           = -1
+     * StringUtils.lastIndexOf("aabaabaa", 'b', 8)  = 5
+     * StringUtils.lastIndexOf("aabaabaa", 'b', 4)  = 2
+     * StringUtils.lastIndexOf("aabaabaa", 'b', 0)  = -1
+     * StringUtils.lastIndexOf("aabaabaa", 'b', 9)  = 5
+     * StringUtils.lastIndexOf("aabaabaa", 'b', -1) = -1
+     * StringUtils.lastIndexOf("aabaabaa", 'a', 0)  = 0
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChar 要查找的字符
+     * @param startPos 从指定索引开始向前搜索
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int lastIndexOf(String str, char searchChar, int startPos) {
+        if ((str == null) || (str.length() == 0)) {
+            return -1;
+        }
+
+        return str.lastIndexOf(searchChar, startPos);
+    }
+
+    /**
+     * 从字符串尾部开始查找指定字符串，并返回第一个匹配的索引值。
+     *      --如果字符串为<code>null</code>或未找到，则返回<code>-1</code>。
+     *
+     * <pre>
+     * StringUtils.lastIndexOf(null, *)         = -1
+     * StringUtils.lastIndexOf("", *)           = -1
+     * StringUtils.lastIndexOf("aabaabaa", 'a') = 7
+     * StringUtils.lastIndexOf("aabaabaa", 'b') = 5
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchStr 要查找的字符串
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int lastIndexOf(String str, String searchStr) {
+        if ((str == null) || (searchStr == null)) {
+            return -1;
+        }
+
+        return str.lastIndexOf(searchStr);
+    }
+
+    /**
+     * 从字符串尾部开始查找指定字符串集合中的字符串，并返回第一个匹配的起始索引。
+     *      --如果字符串为<code>null</code>，则返回<code>-1</code>。
+     *      --如果字符串集合为<code>null</code>或空，也返回<code>-1</code>。
+     *      --如果字符串集合包括<code>""</code>，并且字符串不为<code>null</code>，则返回<code>str.length()</code>
+     *
+     * <pre>
+     * StringUtils.lastIndexOfAny(null, *)                   = -1
+     * StringUtils.lastIndexOfAny(*, null)                   = -1
+     * StringUtils.lastIndexOfAny(*, [])                     = -1
+     * StringUtils.lastIndexOfAny(*, [null])                 = -1
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["ab","cd"]) = 6
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["cd","ab"]) = 6
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["mn","op"]) = -1
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["mn","op"]) = -1
+     * StringUtils.lastIndexOfAny("zzabyycdxx", ["mn",""])   = 10
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchStrs 要搜索的字符串集合
+     * @return 第一个匹配的索引值。如果字符串为<code>null</code>或未找到，则返回<code>-1</code>
+     */
+    public static int lastIndexOfAny(String str, String[] searchStrs) {
+        if ((str == null) || (searchStrs == null)) {
+            return -1;
+        }
+
+        int searchStrsLength = searchStrs.length;
+        int index = -1;
+        int tmp = 0;
+
+        for (int i = 0; i < searchStrsLength; i++) {
+            String search = searchStrs[i];
+
+            if (search == null) {
+                continue;
+            }
+
+            tmp = str.lastIndexOf(search);
+
+            if (tmp > index) {
+                index = tmp;
+            }
+        }
+
+        return index;
+    }
+
+    /**
+     * 检查字符串中是否包含指定的字符。
+     *      --如果字符串为<code>null</code>，将返回<code>false</code>。
+     *
+     * <pre>
+     * StringUtils.contains(null, *)    = false
+     * StringUtils.contains("", *)      = false
+     * StringUtils.contains("abc", 'a') = true
+     * StringUtils.contains("abc", 'z') = false
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchChar 要查找的字符
+     * @return 如果找到，则返回<code>true</code>
+     */
+    public static boolean contains(String str, char searchChar) {
+        if ((str == null) || (str.length() == 0)) {
+            return false;
+        }
+
+        return str.indexOf(searchChar) >= 0;
+    }
+
+    /**
+     * 检查字符串中是否包含指定的字符串。
+     *      --如果字符串为<code>null</code>，将返回<code>false</code>。
+     *
+     * <pre>
+     * StringUtils.contains(null, *)     = false
+     * StringUtils.contains(*, null)     = false
+     * StringUtils.contains("", "")      = true
+     * StringUtils.contains("abc", "")   = true
+     * StringUtils.contains("abc", "a")  = true
+     * StringUtils.contains("abc", "z")  = false
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param searchStr 要查找的字符串
+     * @return 如果找到，则返回<code>true</code>
+     */
+    public static boolean contains(String str, String searchStr) {
+        if ((str == null) || (searchStr == null)) {
+            return false;
+        }
+
+        return str.indexOf(searchStr) >= 0;
+    }
+
+    /**
+     * 检查字符串是是否只包含指定字符集合中的字符。
+     *      --如果字符串为<code>null</code>，则返回<code>false</code>。
+     *      --如果字符集合为<code>null</code>，则返回<code>false</code>。 但是空字符串永远返回<code>true</code>.
+     *
+     * <pre>
+     * StringUtils.containsOnly(null, *)       = false
+     * StringUtils.containsOnly(*, null)       = false
+     * StringUtils.containsOnly("", *)         = true
+     * StringUtils.containsOnly("ab", '')      = false
+     * StringUtils.containsOnly("abab", 'abc') = true
+     * StringUtils.containsOnly("ab1", 'abc')  = false
+     * StringUtils.containsOnly("abz", 'abc')  = false
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param valid 要查找的字符串
+     * @return 如果找到，则返回<code>true</code>
+     */
+    public static boolean containsOnly(String str, char[] valid) {
+        if ((valid == null) || (str == null)) {
+            return false;
+        }
+
+        if (str.length() == 0) {
+            return true;
+        }
+
+        if (valid.length == 0) {
+            return false;
+        }
+
+        return indexOfAnyBut(str, valid) == -1;
+    }
+
+    /**
+     * 检查字符串是是否只包含指定字符集合中的字符。
+     *      --如果字符串为<code>null</code>，则返回<code>false</code>。
+     *      --如果字符集合为<code>null</code>，则返回<code>false</code>。 但是空字符串永远返回<code>true</code>.
+     *
+     * <pre>
+     * StringUtils.containsOnly(null, *)       = false
+     * StringUtils.containsOnly(*, null)       = false
+     * StringUtils.containsOnly("", *)         = true
+     * StringUtils.containsOnly("ab", "")      = false
+     * StringUtils.containsOnly("abab", "abc") = true
+     * StringUtils.containsOnly("ab1", "abc")  = false
+     * StringUtils.containsOnly("abz", "abc")  = false
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param valid 要查找的字符串
+     * @return 如果找到，则返回<code>true</code>
+     */
+    public static boolean containsOnly(String str, String valid) {
+        if ((str == null) || (valid == null)) {
+            return false;
+        }
+
+        return containsOnly(str, valid.toCharArray());
+    }
+
+    /**
+     * 检查字符串是是否不包含指定字符集合中的字符。
+     *      --如果字符串为<code>null</code>，则返回<code>false</code>。
+     *      --如果字符集合为<code>null</code>，则返回<code>true</code>。
+     *      --但是空字符串永远返回<code>true</code>.
+     *
+     * <pre>
+     * StringUtils.containsNone(null, *)       = true
+     * StringUtils.containsNone(*, null)       = true
+     * StringUtils.containsNone("", *)         = true
+     * StringUtils.containsNone("ab", '')      = true
+     * StringUtils.containsNone("abab", 'xyz') = true
+     * StringUtils.containsNone("ab1", 'xyz')  = true
+     * StringUtils.containsNone("abz", 'xyz')  = false
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param invalid 要查找的字符串
+     * @return 如果找到，则返回<code>true</code>
+     */
+    public static boolean containsNone(String str, char[] invalid) {
+        if ((str == null) || (invalid == null)) {
+            return true;
+        }
+
+        int strSize = str.length();
+        int validSize = invalid.length;
+
+        for (int i = 0; i < strSize; i++) {
+            char ch = str.charAt(i);
+
+            for (int j = 0; j < validSize; j++) {
+                if (invalid[j] == ch) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 检查字符串是是否不包含指定字符集合中的字符。
+     *      --如果字符串为<code>null</code>，则返回<code>false</code>。
+     *      --如果字符集合为<code>null</code>，则返回<code>true</code>。
+     *      --空字符串永远返回<code>true</code>.
+     *
+     * <pre>
+     * StringUtils.containsNone(null, *)       = true
+     * StringUtils.containsNone(*, null)       = true
+     * StringUtils.containsNone("", *)         = true
+     * StringUtils.containsNone("ab", "")      = true
+     * StringUtils.containsNone("abab", "xyz") = true
+     * StringUtils.containsNone("ab1", "xyz")  = true
+     * StringUtils.containsNone("abz", "xyz")  = false
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param invalidChars 要查找的字符串
+     * @return 如果找到，则返回<code>true</code>
+     */
+    public static boolean containsNone(String str, String invalidChars) {
+        if ((str == null) || (invalidChars == null)) {
+            return true;
+        }
+
+        return containsNone(str, invalidChars.toCharArray());
+    }
+
+    /**
+     * 取得指定子串在字符串中出现的次数。
+     *      --如果字符串为<code>null</code>或空，则返回<code>0</code>。
+     *
+     * <pre>
+     * StringUtils.countMatches(null, *)       = 0
+     * StringUtils.countMatches("", *)         = 0
+     * StringUtils.countMatches("abba", null)  = 0
+     * StringUtils.countMatches("abba", "")    = 0
+     * StringUtils.countMatches("abba", "a")   = 2
+     * StringUtils.countMatches("abba", "ab")  = 1
+     * StringUtils.countMatches("abba", "xxx") = 0
+     * </pre>
+     *
+     * @param str 要扫描的字符串
+     * @param subStr 子字符串
+     * @return 子串在字符串中出现的次数，如果字符串为<code>null</code>或空，则返回<code>0</code>
+     */
+    public static int countMatches(String str, String subStr) {
+        if ((str == null) || (str.length() == 0) || (subStr == null) || (subStr.length() == 0)) {
+            return 0;
+        }
+
+        int count = 0;
+        int index = 0;
+
+        while ((index = str.indexOf(subStr, index)) != -1) {
+            count++;
+            index += subStr.length();
+        }
+
+        return count;
+    }
+
 }
