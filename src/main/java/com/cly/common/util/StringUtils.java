@@ -10,6 +10,8 @@
  */
 package com.cly.common.util;
 
+import com.cly.common.lang.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +24,7 @@ public class StringUtils {
     public static final String[] EMPTY_STRINGS = {};
     /** 空字符串 */
     public static final String EMPTY_STRING = "";
+    private static final char SEPARATOR_CHAR_ASTERISK = '*';
 
     /*
 	 * ====================================
@@ -1219,6 +1222,326 @@ public class StringUtils {
         }
 
         return count;
+    }
+
+    /*
+	 * ============================
+	 * 取子串函数
+	 * ============================
+	 * ==
+	 */
+
+    /**
+     * 压缩字符串。
+     *      --如果开始位置大于字符串长度，则返回空字符串。 负的索引代表从尾部开始计算。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.compressString(null, *)   = null
+     * StringUtils.compressString("", *)     = ""
+     * StringUtils.compressString("abc", 0)  = "abc"
+     * StringUtils.compressString("abc", 2)  = "c"
+     * StringUtils.compressString("abc", 4)  = ""
+     * StringUtils.compressString("abc", -2) = "bc"
+     * StringUtils.compressString("abc", -4) = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param start 起始索引，如果为负数，表示从尾部查找
+     * @return 压缩后的字符串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String compressString(String str, int start) {
+        if (str == null) {
+            return null;
+        }
+
+        if (start < 0) {
+            start = str.length() + start;
+        }
+
+        if (start < 0) {
+            start = 0;
+        }
+
+        if (start > str.length()) {
+            return EMPTY_STRING;
+        }
+
+        return str.substring(start);
+    }
+
+    /**
+     * 压缩字符串。
+     *      --如果开始位置大于字符串长度，则返回空字符串，
+     *      --如果结束位置大于字符串长度，则取开始位置到原字符串的末尾。负的索引代表从尾部开始计算。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.compressString(null, *, *)    = null
+     * StringUtils.compressString("", * ,  *)    = "";
+     * StringUtils.compressString("abc", 0, 2)   = "ab"
+     * StringUtils.compressString("abc", 2, 0)   = ""
+     * StringUtils.compressString("abc", 4, 7)   = ""
+     * StringUtils.compressString("abc", 2, 4)   = "c"
+     * StringUtils.compressString("abc", 4, 6)   = ""
+     * StringUtils.compressString("abc", 2, 2)   = ""
+     * StringUtils.compressString("abc", -2, -1) = "b"
+     * StringUtils.compressString("abc", -4, 2)  = "ab"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param start 起始索引，如果为负数，表示从尾部计算
+     * @param end 结束索引（不含），如果为负数，表示从尾部计算
+     * @return 压缩后的字符串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String compressString(String str, int start, int end) {
+        if (str == null) {
+            return null;
+        }
+
+        if (end < 0) {
+            end = str.length() + end;
+        }
+
+        if (start < 0) {
+            start = str.length() + start;
+        }
+
+        if (end > str.length()) {
+            end = str.length();
+        }
+
+        if (start > end) {
+            return EMPTY_STRING;
+        }
+
+        if (start < 0) {
+            start = 0;
+        }
+
+        if (end < 0) {
+            end = 0;
+        }
+
+        return str.substring(start, end);
+    }
+
+    /**
+     * 取得长度为指定字符数的最左边的子串。
+     *
+     * <pre>
+     * StringUtils.left(null, *)    = null
+     * StringUtils.left(*, -ve)     = ""
+     * StringUtils.left("", *)      = ""
+     * StringUtils.left("abc", 0)   = ""
+     * StringUtils.left("abc", 2)   = "ab"
+     * StringUtils.left("abc", 4)   = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param len 最左子串的长度
+     * @return 子串，如果原始字串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String left(String str, int len) {
+        if (str == null) {
+            return null;
+        }
+
+        if (len < 0) {
+            return EMPTY_STRING;
+        }
+
+        if (str.length() <= len) {
+            return str;
+        } else {
+            return str.substring(0, len);
+        }
+    }
+
+    /**
+     * 取得长度为指定字符数的最右边的子串。
+     *
+     * <pre>
+     * StringUtils.right(null, *)    = null
+     * StringUtils.right(*, -ve)     = ""
+     * StringUtils.right("", *)      = ""
+     * StringUtils.right("abc", 0)   = ""
+     * StringUtils.right("abc", 2)   = "bc"
+     * StringUtils.right("abc", 4)   = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param len 最右子串的长度
+     * @return 子串，如果原始字串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String right(String str, int len) {
+        if (str == null) {
+            return null;
+        }
+
+        if (len < 0) {
+            return EMPTY_STRING;
+        }
+
+        if (str.length() <= len) {
+            return str;
+        } else {
+            return str.substring(str.length() - len);
+        }
+    }
+
+    /**
+     * 取得从指定索引开始计算的、长度为指定字符数的子串。
+     *
+     * <pre>
+     * StringUtils.mid(null, *, *)    = null
+     * StringUtils.mid(*, *, -ve)     = ""
+     * StringUtils.mid("", 0, *)      = ""
+     * StringUtils.mid("abc", 0, 2)   = "ab"
+     * StringUtils.mid("abc", 0, 4)   = "abc"
+     * StringUtils.mid("abc", 2, 4)   = "c"
+     * StringUtils.mid("abc", 4, 2)   = ""
+     * StringUtils.mid("abc", -2, 2)  = "ab"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param pos 起始索引，如果为负数，则看作<code>0</code>
+     * @param len 子串的长度，如果为负数，则看作长度为<code>0</code>
+     * @return 子串，如果原始字串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String mid(String str, int pos, int len) {
+        if (str == null) {
+            return null;
+        }
+
+        if ((len < 0) || (pos > str.length())) {
+            return EMPTY_STRING;
+        }
+
+        if (pos < 0) {
+            pos = 0;
+        }
+
+        if (str.length() <= (pos + len)) {
+            return str.substring(pos);
+        } else {
+            return str.substring(pos, pos + len);
+        }
+    }
+
+    /**
+     * 掩码中间几位为*,mask位数自动计算
+     *
+     * <pre>
+     * StringUtils.mask(null)    = null
+     * StringUtils.mask("")      = ""
+     * StringUtils.mask("1")     = "*"
+     * StringUtils.mask("11")   = "*1"
+     * StringUtils.mask("111")   = "1*1"
+     * StringUtils.mask("1111")   = "1**1"
+     * StringUtils.mask("11111")   = "1**11"
+     * StringUtils.mask("111111")  = "1***11"
+     * StringUtils.mask("11111111111")  = "111*****111"
+     * </pre>
+     *
+     * @param str 需要掩码的字符串
+     * @return  掩码后的字符串
+     */
+    public static String mask(String str) {
+        if (str == null || str.length() == 0) {
+            return str;
+        }
+        if (str.length() == 1) {
+            return String.valueOf(SEPARATOR_CHAR_ASTERISK);
+        }
+        Pair<Integer, Integer> pair = getMaskLength(str.length());
+        //复制整个str
+        char[] chars = str.toCharArray();
+        char[] mask = repeatAsterisk(pair.getS());
+        //复制mask
+        System.arraycopy(mask, 0, chars, (pair.getF().intValue()), pair.getS());
+        //复制输出
+        return new String(chars);
+    }
+
+    /**
+     * *掩码中间几位为*
+     *
+     * @param str String 需要掩码的字符串
+     * @param len mask位数
+     * @return String  掩码后的字符串
+     */
+    public static String mask(String str, int len) {
+        if (str == null || str.length() == 0) {
+            return str;
+        }
+        if (len >= str.length()) {
+            char[] mask = repeatAsterisk(str.length());
+            return new String(mask);
+        }
+        int startIndex = (str.length() - len) / 2;
+        char[] mask = repeatAsterisk(len);
+        //复制整个str
+        char[] chars = str.toCharArray();
+        //复制mask
+        System.arraycopy(mask, 0, chars, startIndex, mask.length);
+        //复制输出
+        return new String(chars);
+    }
+
+    /**
+     * 掩码指定的位数为*
+     * 注意:index从0开始
+     *
+     * @param str 原字符串
+     * @param beginIndex 开始index,从0开始
+     * @param endIndex 结束index,掩码不包括此位
+     * @return 返回掩码后的字符串
+     */
+    public static String mask(String str, int beginIndex, int endIndex) {
+        if (str == null || str.length() == 0) {
+            return str;
+        }
+        if (beginIndex < 0) {
+            beginIndex = 0;
+        }
+        if (endIndex > str.length()) {
+            endIndex = str.length();
+        }
+        int subLen = endIndex - beginIndex;
+        if (subLen < 0) {
+            throw new StringIndexOutOfBoundsException(subLen);
+        }
+        if (str.length() == 1) {
+            return String.valueOf(SEPARATOR_CHAR_ASTERISK);
+        }
+        //复制整个str
+        char[] chars = str.toCharArray();
+        char[] mask = repeatAsterisk(subLen);
+        //复制mask
+        System.arraycopy(mask, 0, chars, beginIndex, subLen);
+        //复制输出
+        return new String(chars);
+    }
+
+    private static char[] repeatAsterisk(int len) {
+        char[] chars = new char[len];
+        for (int i = 0; i < len; i++) {
+            chars[i] = SEPARATOR_CHAR_ASTERISK;
+        }
+        return chars;
+    }
+
+    /**
+     * 第一个保存开始index，第二个保存长度
+     *
+     * @param len int
+     * @return Pair<Integer, Integer>
+     */
+    private static Pair<Integer, Integer> getMaskLength(int len) {
+        int maskLen = Math.max((len)/ 2, 1);
+        int begin = (len - maskLen) / 2 ;
+        return Pair.build(begin, maskLen);
     }
 
 }
