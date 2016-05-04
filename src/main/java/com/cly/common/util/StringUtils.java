@@ -1789,4 +1789,40 @@ public class StringUtils {
         return null;
     }
 
+    /*
+	 * ============================
+	 * 删除字符
+	 * ============================
+	 */
+
+    /**
+     * 删除所有在<code>Character.isWhitespace(char)</code>中所定义的空白。
+     *
+     * <pre>
+     * StringUtils.deleteWhitespace(null)         = null
+     * StringUtils.deleteWhitespace("")           = ""
+     * StringUtils.deleteWhitespace("abc")        = "abc"
+     * StringUtils.deleteWhitespace("   ab  c  ") = "abc"
+     * </pre>
+     *
+     * @param str 要处理的字符串
+     * @return 去空白后的字符串，如果原始字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String deleteWhitespace(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        int sz = str.length();
+        StringBuffer buffer = new StringBuffer(sz);
+
+        for (int i = 0; i < sz; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                buffer.append(str.charAt(i));
+            }
+        }
+
+        return buffer.toString();
+    }
+
 }
