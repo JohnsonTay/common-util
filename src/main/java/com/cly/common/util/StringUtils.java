@@ -10,6 +10,7 @@
  */
 package com.cly.common.util;
 
+import com.cly.common.collection.ArrayUtils;
 import com.cly.common.lang.util.Pair;
 
 import java.util.ArrayList;
@@ -2465,6 +2466,94 @@ public class StringUtils {
         str = alignRight(str, strLen + (pads / 2), padStr);
         str = alignLeft(str, size, padStr);
         return str;
+    }
+
+    /**
+	 * ===========================
+	 * 反转字符串
+	 * ===========================
+	 */
+
+    /**
+     * 反转字符串中的字符顺序。
+     * 如果字符串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.reverse(null)  = null
+     * StringUtils.reverse("")    = ""
+     * StringUtils.reverse("bat") = "tab"
+     * </pre>
+     *
+     * @param str 要反转的字符串
+     * @return 反转后的字符串，如果原字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String reverse(String str) {
+        if ((str == null) || (str.length() == 0)) {
+            return str;
+        }
+
+        return new StringBuffer(str).reverse().toString();
+    }
+
+    /**
+     * 反转指定分隔符分隔的各子串的顺序。
+     * 如果字符串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.reverseDelimited(null, *)      = null
+     * StringUtils.reverseDelimited("", *)        = ""
+     * StringUtils.reverseDelimited("a.b.c", 'x') = "a.b.c"
+     * StringUtils.reverseDelimited("a.b.c", '.') = "c.b.a"
+     * </pre>
+     *
+     * @param str 要反转的字符串
+     * @param separatorChar 分隔符
+     * @return 反转后的字符串，如果原字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String reverseDelimited(String str, char separatorChar) {
+        if (str == null) {
+            return null;
+        }
+
+        String[] strs = split(str, separatorChar);
+
+        ArrayUtils.reverse(strs);
+
+        return join(strs, separatorChar);
+    }
+
+    /**
+     * 反转指定分隔符分隔的各子串的顺序。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.reverseDelimited(null, *, *)          = null
+     * StringUtils.reverseDelimited("", *, *)            = ""
+     * StringUtils.reverseDelimited("a.b.c", null, null) = "a.b.c"
+     * StringUtils.reverseDelimited("a.b.c", "", null)   = "a.b.c"
+     * StringUtils.reverseDelimited("a.b.c", ".", ",")   = "c,b,a"
+     * StringUtils.reverseDelimited("a.b.c", ".", null)  = "c b a"
+     * </pre>
+     *
+     * @param str 要反转的字符串
+     * @param separatorChars 分隔符，如果为<code>null</code>，则默认使用空白字符
+     * @param separator 用来连接子串的分隔符，如果为<code>null</code>，默认使用空格
+     * @return 反转后的字符串，如果原字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String reverseDelimited(String str, String separatorChars, String separator) {
+        if (str == null) {
+            return null;
+        }
+
+        String[] strs = split(str, separatorChars);
+
+        ArrayUtils.reverse(strs);
+
+        if (separator == null) {
+            return join(strs, ' ');
+        }
+
+        return join(strs, separator);
     }
 
 
