@@ -1544,4 +1544,249 @@ public class StringUtils {
         return Pair.build(begin, maskLen);
     }
 
+    /**
+	 * =============================
+	 * ==
+	* 搜索并取子串函数
+	 * =============================
+	 * ==
+	 */
+
+    /**
+     * 取得第一个出现的分隔子串之前的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --如果分隔子串为<code>null</code>，或未找到该子串，则返回原字符串。
+     *
+     * <pre>
+     * StringUtils.substringBefore(null, *)      = null
+     * StringUtils.substringBefore("", *)        = ""
+     * StringUtils.substringBefore("abc", "a")   = ""
+     * StringUtils.substringBefore("abcba", "b") = "a"
+     * StringUtils.substringBefore("abc", "c")   = "ab"
+     * StringUtils.substringBefore("abc", "d")   = "abc"
+     * StringUtils.substringBefore("abc", "")    = ""
+     * StringUtils.substringBefore("abc", null)  = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param separator 要搜索的分隔子串
+     * @return 子串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String substringBefore(String str, String separator) {
+        if ((str == null) || (separator == null) || (str.length() == 0)) {
+            return str;
+        }
+
+        if (separator.length() == 0) {
+            return EMPTY_STRING;
+        }
+
+        int pos = str.indexOf(separator);
+
+        if (pos == -1) {
+            return str;
+        }
+
+        return str.substring(0, pos);
+    }
+
+    /**
+     * 取得第一个出现的分隔子串之后的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --如果分隔子串为<code>null</code>，或未找到该子串，则返回原字符串。
+     *
+     * <pre>
+     * StringUtils.substringAfter(null, *)      = null
+     * StringUtils.substringAfter("", *)        = ""
+     * StringUtils.substringAfter(*, null)      = ""
+     * StringUtils.substringAfter("abc", "a")   = "bc"
+     * StringUtils.substringAfter("abcba", "b") = "cba"
+     * StringUtils.substringAfter("abc", "c")   = ""
+     * StringUtils.substringAfter("abc", "d")   = ""
+     * StringUtils.substringAfter("abc", "")    = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param separator 要搜索的分隔子串
+     * @return 子串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String substringAfter(String str, String separator) {
+        if ((str == null) || (str.length() == 0)) {
+            return str;
+        }
+
+        if (separator == null) {
+            return EMPTY_STRING;
+        }
+
+        int pos = str.indexOf(separator);
+
+        if (pos == -1) {
+            return EMPTY_STRING;
+        }
+
+        return str.substring(pos + separator.length());
+    }
+
+    /**
+     * 取得最后一个的分隔子串之前的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --如果分隔子串为<code>null</code>，或未找到该子串，则返回原字符串。
+     *
+     * <pre>
+     * StringUtils.substringBeforeLast(null, *)      = null
+     * StringUtils.substringBeforeLast("", *)        = ""
+     * StringUtils.substringBeforeLast("abcba", "b") = "abc"
+     * StringUtils.substringBeforeLast("abc", "c")   = "ab"
+     * StringUtils.substringBeforeLast("a", "a")     = ""
+     * StringUtils.substringBeforeLast("a", "z")     = "a"
+     * StringUtils.substringBeforeLast("a", null)    = "a"
+     * StringUtils.substringBeforeLast("a", "")      = "a"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param separator 要搜索的分隔子串
+     * @return 子串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String substringBeforeLast(String str, String separator) {
+        if ((str == null) || (separator == null) || (str.length() == 0)
+                || (separator.length() == 0)) {
+            return str;
+        }
+
+        int pos = str.lastIndexOf(separator);
+
+        if (pos == -1) {
+            return str;
+        }
+
+        return str.substring(0, pos);
+    }
+
+    /**
+     * 取得最后一个的分隔子串之后的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --如果分隔子串为<code>null</code>，或未找到该子串，则返回原字符串。
+     *
+     * <pre>
+     * StringUtils.substringAfterLast(null, *)      = null
+     * StringUtils.substringAfterLast("", *)        = ""
+     * StringUtils.substringAfterLast(*, "")        = ""
+     * StringUtils.substringAfterLast(*, null)      = ""
+     * StringUtils.substringAfterLast("abc", "a")   = "bc"
+     * StringUtils.substringAfterLast("abcba", "b") = "a"
+     * StringUtils.substringAfterLast("abc", "c")   = ""
+     * StringUtils.substringAfterLast("a", "a")     = ""
+     * StringUtils.substringAfterLast("a", "z")     = ""
+     * </pre>
+     *
+     * @param str 字符串
+     * @param separator 要搜索的分隔子串
+     * @return 子串，如果原始串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String substringAfterLast(String str, String separator) {
+        if ((str == null) || (str.length() == 0)) {
+            return str;
+        }
+
+        if ((separator == null) || (separator.length() == 0)) {
+            return EMPTY_STRING;
+        }
+
+        int pos = str.lastIndexOf(separator);
+
+        if ((pos == -1) || (pos == (str.length() - separator.length()))) {
+            return EMPTY_STRING;
+        }
+
+        return str.substring(pos + separator.length());
+    }
+
+    /**
+     * 取得指定分隔符的前两次出现之间的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --果分隔子串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.substringBetween(null, *)            = null
+     * StringUtils.substringBetween("", "")             = ""
+     * StringUtils.substringBetween("", "tag")          = null
+     * StringUtils.substringBetween("tagabctag", null)  = null
+     * StringUtils.substringBetween("tagabctag", "")    = ""
+     * StringUtils.substringBetween("tagabctag", "tag") = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param tag 要搜索的分隔子串
+     * @return 子串，如果原始串为<code>null</code>或未找到分隔子串，则返回<code>null</code>
+     */
+    public static String substringBetween(String str, String tag) {
+        return substringBetween(str, tag, tag, 0);
+    }
+
+    /**
+     * 取得两个分隔符之间的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --如果分隔子串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.substringBetween(null, *, *)          = null
+     * StringUtils.substringBetween("", "", "")          = ""
+     * StringUtils.substringBetween("", "", "tag")       = null
+     * StringUtils.substringBetween("", "tag", "tag")    = null
+     * StringUtils.substringBetween("yabcz", null, null) = null
+     * StringUtils.substringBetween("yabcz", "", "")     = ""
+     * StringUtils.substringBetween("yabcz", "y", "z")   = "abc"
+     * StringUtils.substringBetween("yabczyabcz", "y", "z")   = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param open 要搜索的分隔子串1
+     * @param close 要搜索的分隔子串2
+     * @return 子串，如果原始串为<code>null</code>或未找到分隔子串，则返回<code>null</code>
+     */
+    public static String substringBetween(String str, String open, String close) {
+        return substringBetween(str, open, close, 0);
+    }
+
+    /**
+     * 取得两个分隔符之间的子串。
+     *      --如果字符串为<code>null</code>，则返回<code>null</code>。
+     *      --如果分隔子串为<code>null</code>，则返回<code>null</code>。
+     *
+     * <pre>
+     * StringUtils.substringBetween(null, *, *)          = null
+     * StringUtils.substringBetween("", "", "")          = ""
+     * StringUtils.substringBetween("", "", "tag")       = null
+     * StringUtils.substringBetween("", "tag", "tag")    = null
+     * StringUtils.substringBetween("yabcz", null, null) = null
+     * StringUtils.substringBetween("yabcz", "", "")     = ""
+     * StringUtils.substringBetween("yabcz", "y", "z")   = "abc"
+     * StringUtils.substringBetween("yabczyabcz", "y", "z")   = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @param open 要搜索的分隔子串1
+     * @param close 要搜索的分隔子串2
+     * @param fromIndex 从指定index处搜索
+     * @return 子串，如果原始串为<code>null</code>或未找到分隔子串，则返回<code>null</code>
+     */
+    public static String substringBetween(String str, String open, String close, int fromIndex) {
+        if ((str == null) || (open == null) || (close == null)) {
+            return null;
+        }
+
+        int start = str.indexOf(open, fromIndex);
+
+        if (start != -1) {
+            int end = str.indexOf(close, start + open.length());
+
+            if (end != -1) {
+                return str.substring(start + open.length(), end);
+            }
+        }
+
+        return null;
+    }
+
 }
