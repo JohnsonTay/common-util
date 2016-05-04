@@ -2085,4 +2085,387 @@ public class StringUtils {
     }
 
 
+	/*
+	 * ===============================
+	 * 重复/对齐字符串
+	 * ===============================
+	 */
+
+    /**
+     * 将指定字符串重复n遍。
+     *
+     * <pre>
+     * StringUtils.repeat(null, 2)   = null
+     * StringUtils.repeat("", 0)     = ""
+     * StringUtils.repeat("", 2)     = ""
+     * StringUtils.repeat("a", 3)    = "aaa"
+     * StringUtils.repeat("ab", 2)   = "abab"
+     * StringUtils.repeat("abcd", 2) = "abcdabcd"
+     * StringUtils.repeat("a", -2)   = ""
+     * </pre>
+     *
+     * @param str 要重复的字符串
+     * @param repeat 重复次数，如果小于<code>0</code>，则看作<code>0</code>
+     * @return 重复n次的字符串，如果原始字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String repeat(String str, int repeat) {
+        if (str == null) {
+            return null;
+        }
+
+        if (repeat <= 0) {
+            return EMPTY_STRING;
+        }
+
+        int inputLength = str.length();
+
+        if ((repeat == 1) || (inputLength == 0)) {
+            return str;
+        }
+
+        int outputLength = inputLength * repeat;
+
+        switch (inputLength) {
+            case 1:
+
+                char ch = str.charAt(0);
+                char[] output1 = new char[outputLength];
+
+                for (int i = repeat - 1; i >= 0; i--) {
+                    output1[i] = ch;
+                }
+
+                return new String(output1);
+
+            case 2:
+
+                char ch0 = str.charAt(0);
+                char ch1 = str.charAt(1);
+                char[] output2 = new char[outputLength];
+
+                for (int i = (repeat * 2) - 2; i >= 0; i--, i--) {
+                    output2[i] = ch0;
+                    output2[i + 1] = ch1;
+                }
+
+                return new String(output2);
+
+            default:
+
+                StringBuffer buf = new StringBuffer(outputLength);
+
+                for (int i = 0; i < repeat; i++) {
+                    buf.append(str);
+                }
+
+                return buf.toString();
+        }
+    }
+
+    /**
+     * 扩展并左对齐字符串，用空格<code>' '</code>填充右边。
+     *
+     * <pre>
+     * StringUtils.alignLeft(null, *)   = null
+     * StringUtils.alignLeft("", 3)     = "   "
+     * StringUtils.alignLeft("bat", 3)  = "bat"
+     * StringUtils.alignLeft("bat", 5)  = "bat  "
+     * StringUtils.alignLeft("bat", 1)  = "bat"
+     * StringUtils.alignLeft("bat", -1) = "bat"
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+
+    public static String alignLeft(String str, int size) {
+        return alignLeft(str, size, ' ');
+    }
+
+    /**
+     * 扩展并左对齐字符串，用指定字符填充右边。
+     *
+     * <pre>
+     * StringUtils.alignLeft(null, *, *)     = null
+     * StringUtils.alignLeft("", 3, 'z')     = "zzz"
+     * StringUtils.alignLeft("bat", 3, 'z')  = "bat"
+     * StringUtils.alignLeft("bat", 5, 'z')  = "batzz"
+     * StringUtils.alignLeft("bat", 1, 'z')  = "bat"
+     * StringUtils.alignLeft("bat", -1, 'z') = "bat"
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @param padChar 填充字符
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String alignLeft(String str, int size, char padChar) {
+        if (str == null) {
+            return null;
+        }
+
+        int pads = size - str.length();
+
+        if (pads <= 0) {
+            return str;
+        }
+
+        return alignLeft(str, size, String.valueOf(padChar));
+    }
+
+    /**
+     * 扩展并左对齐字符串，用指定字符串填充右边。
+     *
+     * <pre>
+     * StringUtils.alignLeft(null, *, *)      = null
+     * StringUtils.alignLeft("", 3, "z")      = "zzz"
+     * StringUtils.alignLeft("bat", 3, "yz")  = "bat"
+     * StringUtils.alignLeft("bat", 5, "yz")  = "batyz"
+     * StringUtils.alignLeft("bat", 8, "yz")  = "batyzyzy"
+     * StringUtils.alignLeft("bat", 1, "yz")  = "bat"
+     * StringUtils.alignLeft("bat", -1, "yz") = "bat"
+     * StringUtils.alignLeft("bat", 5, null)  = "bat  "
+     * StringUtils.alignLeft("bat", 5, "")    = "bat  "
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @param padStr 填充字符串
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String alignLeft(String str, int size, String padStr) {
+        if (str == null) {
+            return null;
+        }
+
+        if ((padStr == null) || (padStr.length() == 0)) {
+            padStr = " ";
+        }
+
+        int padLen = padStr.length();
+        int strLen = str.length();
+        int pads = size - strLen;
+
+        if (pads <= 0) {
+            return str;
+        }
+
+        if (pads == padLen) {
+            return str.concat(padStr);
+        } else if (pads < padLen) {
+            return str.concat(padStr.substring(0, pads));
+        } else {
+            char[] padding = new char[pads];
+            char[] padChars = padStr.toCharArray();
+
+            for (int i = 0; i < pads; i++) {
+                padding[i] = padChars[i % padLen];
+            }
+
+            return str.concat(new String(padding));
+        }
+    }
+
+    /**
+     * 扩展并右对齐字符串，用空格<code>' '</code>填充左边。
+     *
+     * <pre>
+     * StringUtils.alignRight(null, *)   = null
+     * StringUtils.alignRight("", 3)     = "   "
+     * StringUtils.alignRight("bat", 3)  = "bat"
+     * StringUtils.alignRight("bat", 5)  = "  bat"
+     * StringUtils.alignRight("bat", 1)  = "bat"
+     * StringUtils.alignRight("bat", -1) = "bat"
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String alignRight(String str, int size) {
+        return alignRight(str, size, ' ');
+    }
+
+    /**
+     * 扩展并右对齐字符串，用指定字符填充左边。
+     *
+     * <pre>
+     * StringUtils.alignRight(null, *, *)     = null
+     * StringUtils.alignRight("", 3, 'z')     = "zzz"
+     * StringUtils.alignRight("bat", 3, 'z')  = "bat"
+     * StringUtils.alignRight("bat", 5, 'z')  = "zzbat"
+     * StringUtils.alignRight("bat", 1, 'z')  = "bat"
+     * StringUtils.alignRight("bat", -1, 'z') = "bat"
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @param padChar 填充字符
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String alignRight(String str, int size, char padChar) {
+        if (str == null) {
+            return null;
+        }
+
+        int pads = size - str.length();
+
+        if (pads <= 0) {
+            return str;
+        }
+
+        return alignRight(str, size, String.valueOf(padChar));
+    }
+
+    /**
+     * 扩展并右对齐字符串，用指定字符串填充左边。
+     *
+     * <pre>
+     * StringUtils.alignRight(null, *, *)      = null
+     * StringUtils.alignRight("", 3, "z")      = "zzz"
+     * StringUtils.alignRight("bat", 3, "yz")  = "bat"
+     * StringUtils.alignRight("bat", 5, "yz")  = "yzbat"
+     * StringUtils.alignRight("bat", 8, "yz")  = "yzyzybat"
+     * StringUtils.alignRight("bat", 1, "yz")  = "bat"
+     * StringUtils.alignRight("bat", -1, "yz") = "bat"
+     * StringUtils.alignRight("bat", 5, null)  = "  bat"
+     * StringUtils.alignRight("bat", 5, "")    = "  bat"
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @param padStr 填充字符串
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String alignRight(String str, int size, String padStr) {
+        if (str == null) {
+            return null;
+        }
+
+        if ((padStr == null) || (padStr.length() == 0)) {
+            padStr = " ";
+        }
+
+        int padLen = padStr.length();
+        int strLen = str.length();
+        int pads = size - strLen;
+
+        if (pads <= 0) {
+            return str;
+        }
+
+        if (pads == padLen) {
+            return padStr.concat(str);
+        } else if (pads < padLen) {
+            return padStr.substring(0, pads).concat(str);
+        } else {
+            char[] padding = new char[pads];
+            char[] padChars = padStr.toCharArray();
+
+            for (int i = 0; i < pads; i++) {
+                padding[i] = padChars[i % padLen];
+            }
+
+            return new String(padding).concat(str);
+        }
+    }
+
+    /**
+     * 扩展并居中字符串，用空格<code>' '</code>填充两边。
+     *
+     * <pre>
+     * StringUtils.center(null, *)   = null
+     * StringUtils.center("", 4)     = "    "
+     * StringUtils.center("ab", -1)  = "ab"
+     * StringUtils.center("ab", 4)   = " ab "
+     * StringUtils.center("abcd", 2) = "abcd"
+     * StringUtils.center("a", 4)    = " a  "
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String center(String str, int size) {
+        return center(str, size, ' ');
+    }
+
+    /**
+     * 扩展并居中字符串，用指定字符填充两边。
+     *
+     * <pre>
+     * StringUtils.center(null, *, *)     = null
+     * StringUtils.center("", 4, ' ')     = "    "
+     * StringUtils.center("ab", -1, ' ')  = "ab"
+     * StringUtils.center("ab", 4, ' ')   = " ab "
+     * StringUtils.center("abcd", 2, ' ') = "abcd"
+     * StringUtils.center("a", 4, ' ')    = " a  "
+     * StringUtils.center("a", 4, 'y')    = "yayy"
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @param padChar 填充字符
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String center(String str, int size, char padChar) {
+        if ((str == null) || (size <= 0)) {
+            return str;
+        }
+
+        int strLen = str.length();
+        int pads = size - strLen;
+
+        if (pads <= 0) {
+            return str;
+        }
+
+        str = alignRight(str, strLen + (pads / 2), padChar);
+        str = alignLeft(str, size, padChar);
+        return str;
+    }
+
+    /**
+     * 扩展并居中字符串，用指定字符串填充两边。
+     *
+     * <pre>
+     * StringUtils.center(null, *, *)     = null
+     * StringUtils.center("", 4, " ")     = "    "
+     * StringUtils.center("ab", -1, " ")  = "ab"
+     * StringUtils.center("ab", 4, " ")   = " ab "
+     * StringUtils.center("abcd", 2, " ") = "abcd"
+     * StringUtils.center("a", 4, " ")    = " a  "
+     * StringUtils.center("a", 4, "yz")   = "yayz"
+     * StringUtils.center("abc", 7, null) = "  abc  "
+     * StringUtils.center("abc", 7, "")   = "  abc  "
+     * </pre>
+     *
+     * @param str 要对齐的字符串
+     * @param size 扩展字符串到指定宽度
+     * @param padStr 填充字符串
+     * @return 扩展后的字符串，如果字符串为<code>null</code>，则返回<code>null</code>
+     */
+    public static String center(String str, int size, String padStr) {
+        if ((str == null) || (size <= 0)) {
+            return str;
+        }
+
+        if ((padStr == null) || (padStr.length() == 0)) {
+            padStr = " ";
+        }
+
+        int strLen = str.length();
+        int pads = size - strLen;
+
+        if (pads <= 0) {
+            return str;
+        }
+
+        str = alignRight(str, strLen + (pads / 2), padStr);
+        str = alignLeft(str, size, padStr);
+        return str;
+    }
+
+
 }
