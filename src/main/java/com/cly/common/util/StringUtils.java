@@ -12,6 +12,7 @@ package com.cly.common.util;
 
 import com.cly.common.collection.ArrayUtils;
 import com.cly.common.lang.util.Pair;
+import com.cly.common.lang.validator.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -2556,5 +2557,695 @@ public class StringUtils {
         return join(strs, separator);
     }
 
+    /*
+	 * ==========================================================================
+	 * 比较两个字符串的异同
+	 *      --查找字符串之间的差异，比较字符串的相似度
+	 * ==========================================================================
+	 */
+
+    /**
+     * 比较两个字符串，取得第二个字符串中，和第一个字符串不同的部分。
+     *
+     * <pre>
+     * StringUtils.difference("i am a machine", "i am a robot")  = "robot"
+     * StringUtils.difference(null, null)                        = null
+     * StringUtils.difference("", "")                            = ""
+     * StringUtils.difference("", null)                          = ""
+     * StringUtils.difference("", "abc")                         = "abc"
+     * StringUtils.difference("abc", "")                         = ""
+     * StringUtils.difference("abc", "abc")                      = ""
+     * StringUtils.difference("ab", "abxyz")                     = "xyz"
+     * StringUtils.difference("abcde", "abxyz")                  = "xyz"
+     * StringUtils.difference("abcde", "xyz")                    = "xyz"
+     * </pre>
+     *
+     * @param str1 字符串1
+     * @param str2 字符串2
+     * @return 第二个字符串中，和第一个字符串不同的部分。如果两个字符串相同，则返回空字符串<code>""</code>
+     */
+    public static String difference(String str1, String str2) {
+        if (str1 == null) {
+            return str2;
+        }
+
+        if (str2 == null) {
+            return str1;
+        }
+
+        int index = indexOfDifference(str1, str2);
+
+        if (index == -1) {
+            return EMPTY_STRING;
+        }
+
+        return str2.substring(index);
+    }
+
+    /**
+     * 比较两个字符串，取得两字符串开始不同的索引值。
+     *
+     * <pre>
+     * StringUtils.indexOfDifference("i am a machine", "i am a robot")   = 7
+     * StringUtils.indexOfDifference(null, null)                         = -1
+     * StringUtils.indexOfDifference("", null)                           = -1
+     * StringUtils.indexOfDifference("", "")                             = -1
+     * StringUtils.indexOfDifference("", "abc")                          = 0
+     * StringUtils.indexOfDifference("abc", "")                          = 0
+     * StringUtils.indexOfDifference("abc", "abc")                       = -1
+     * StringUtils.indexOfDifference("ab", "abxyz")                      = 2
+     * StringUtils.indexOfDifference("abcde", "abxyz")                   = 2
+     * StringUtils.indexOfDifference("abcde", "xyz")                     = 0
+     * </pre>
+     *
+     * @param str1 字符串1
+     * @param str2 字符串2
+     * @return 两字符串开始产生差异的索引值，如果两字符串相同，则返回<code>-1</code>
+     */
+    public static int indexOfDifference(String str1, String str2) {
+        if ((str1 == null) || (str2 == null) || (str1.equals(str2))) {
+            return -1;
+        }
+
+        int i;
+
+        for (i = 0; (i < str1.length()) && (i < str2.length()); ++i) {
+            if (str1.charAt(i) != str2.charAt(i)) {
+                break;
+            }
+        }
+
+        if ((i < str2.length()) || (i < str1.length())) {
+            return i;
+        }
+
+        return -1;
+    }
+
+    /**
+     * 取得两个字符串的相似度，<code>0</code>代表字符串相等，数字越大表示字符串越不像。
+     * 这个算法取自<a href="http://www.merriampark.com/ld.htm">http://www.merriampark.com/ld.htm</a>。
+     * 它计算的是从字符串1转变到字符串2所需要的删除、插入和替换的步骤数。
+     *
+     * <pre>
+     * StringUtils.getLevenshteinDistance(null, *)             = IllegalArgumentException
+     * StringUtils.getLevenshteinDistance(*, null)             = IllegalArgumentException
+     * StringUtils.getLevenshteinDistance("","")               = 0
+     * StringUtils.getLevenshteinDistance("","a")              = 1
+     * StringUtils.getLevenshteinDistance("aaapppp", "")       = 7
+     * StringUtils.getLevenshteinDistance("frog", "fog")       = 1
+     * StringUtils.getLevenshteinDistance("fly", "ant")        = 3
+     * StringUtils.getLevenshteinDistance("elephant", "hippo") = 7
+     * StringUtils.getLevenshteinDistance("hippo", "elephant") = 7
+     * StringUtils.getLevenshteinDistance("hippo", "zzzzzzzz") = 8
+     * StringUtils.getLevenshteinDistance("hello", "hallo")    = 1
+     * </pre>
+     *
+     * @param s 第一个字符串，如果是<code>null</code>，则看作空字符串
+     * @param t 第二个字符串，如果是<code>null</code>，则看作空字符串
+     * @return 相似度值
+     */
+    public static int getLevenshteinDistance(String s, String t) {
+        s = defaultIfNull(s);
+        t = defaultIfNull(t);
+
+        int[][] d; // matrix
+        int n; // length of s
+        int m; // length of t
+        int i; // iterates through s
+        int j; // iterates through t
+        char s_i; // ith character of s
+        char t_j; // jth character of t
+        int cost; // cost
+
+        // Step 1
+        n = s.length();
+        m = t.length();
+
+        if (n == 0) {
+            return m;
+        }
+
+        if (m == 0) {
+            return n;
+        }
+
+        d = new int[n + 1][m + 1];
+
+        // Step 2
+        for (i = 0; i <= n; i++) {
+            d[i][0] = i;
+        }
+
+        for (j = 0; j <= m; j++) {
+            d[0][j] = j;
+        }
+
+        // Step 3
+        for (i = 1; i <= n; i++) {
+            s_i = s.charAt(i - 1);
+
+            // Step 4
+            for (j = 1; j <= m; j++) {
+                t_j = t.charAt(j - 1);
+
+                // Step 5
+                if (s_i == t_j) {
+                    cost = 0;
+                } else {
+                    cost = 1;
+                }
+
+                // Step 6
+                d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+            }
+        }
+
+        // Step 7
+        return d[n][m];
+    }
+
+    /**
+     * 取得最小数。
+     *
+     * @param a 整数1
+     * @param b 整数2
+     * @param c 整数3
+     * @return 三个数中的最小值
+     */
+    private static int min(int a, int b, int c) {
+        if (b < a) {
+            a = b;
+        }
+
+        if (c < a) {
+            a = c;
+        }
+
+        return a;
+    }
+
+    /**
+     * 比较两个字符串（大小写敏感）。
+     *
+     * <pre>
+     * StringUtils.equals(null, null)   = false
+     * StringUtils.equals(null, "abc")  = true
+     * StringUtils.equals("abc", null)  = true
+     * StringUtils.equals("abc", "abc") = false
+     * StringUtils.equals("abc", "ABC") = true
+     * </pre>
+     *
+     * @param str1 要比较的字符串1
+     * @param str2 要比较的字符串2
+     * @return 如果两个字符串不相同，返回<code>true</code>
+     */
+    public static boolean notEquals(String str1, String str2) {
+        if (str1 == null) {
+            return str2 != null;
+        }
+
+        return !str1.equals(str2);
+    }
+
+    /**
+     * 统计字符串出现个数
+     *
+     * @param origin 原始字符串
+     * @param ch 比较的字符
+     * @return 如果统计的字符为空(即"", 不是指空格)返回-1；
+     */
+
+    public static int getNum(String origin, String ch) {
+        int chLength = ch.length();
+        if (origin.length() == 0)
+            return 0;
+        if (chLength == 0)
+            return -1; //如果统计的字符为空(即"",不是指空格)返回-1；
+        int index = 0;
+        int count = 0;
+        while (origin.indexOf(ch, index) != -1) {
+            ++count;
+            index = origin.indexOf(ch, index) + chLength;
+        }
+        return count;
+    }
+
+    /**
+	 * ==================================
+	 * 判空函数。
+	 *
+	 * 以下方法用来判定一个字符串是否为：
+	 * 1. null
+	 * 2. empty - ""
+	 * 3. blank - "全部是空白" - 空白由Character.isWhitespace所定义
+	 *
+	 * ===================================
+	 *
+	 */
+
+    /**
+     * 检查字符串是否为<code>null</code>或空字符串<code>""</code>。
+     *
+     * <pre>
+     * StringUtils.isEmpty(null)      = true
+     * StringUtils.isEmpty("")        = true
+     * StringUtils.isEmpty(" ")       = false
+     * StringUtils.isEmpty("bob")     = false
+     * StringUtils.isEmpty("  bob  ") = false
+     * </pre>
+     *
+     * @param str 要检查的字符串
+     * @return 如果为空, 则返回<code>true</code>
+     */
+    public static boolean isEmpty(String str) {
+        return ((str == null) || (str.length() == 0));
+    }
+
+    /**
+     * 检查字符串是否是手机号码
+     *
+     * @param mobile
+     * @return
+     */
+    public static boolean isMobile(String mobile) {
+        return MobileNoPredicate.INSTANCE.apply(mobile);
+    }
+
+    /**
+     * 检查字符串是否是邮件地址
+     *
+     * @param address
+     * @return
+     */
+    public static boolean isEmail(String address) {
+        if (StringUtils.isBlank(address)) {
+            return false;
+        }
+        return EmailPredicate.INSTANCE.apply(address);
+    }
+
+    /**
+     * 台胞证格式校验。
+     * <ul>
+     * <li>台胞证由8位以上字符组成</li>
+     * </ul>
+     *
+     * @param taiwanPassport
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isTaiwanPassport(String taiwanPassport) {
+        if (StringUtils.isBlank(taiwanPassport)) {
+            return false;
+        }
+        return PassportTaiwanPredicate.INSTANCE.apply(taiwanPassport);
+    }
+
+    /**
+     * 回乡证格式校验。
+     * <ul>
+     * <li>回乡证支持首字母为M或H开头，后面字符均为数字</li>
+     * </ul>
+     *
+     * @param homeReturnPassport
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isHomeReturnPassport(String homeReturnPassport) {
+        if (StringUtils.isBlank(homeReturnPassport)) {
+            return false;
+        }
+        return PassportHomeReturnPredicate.INSTANCE.apply(homeReturnPassport);
+    }
+
+    /**
+     * 护照格式校验。
+     * <ul>
+     * <li>护照支持字母和数字</li>
+     * </ul>
+     *
+     * @param passport
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isPassport(String passport) {
+        if (StringUtils.isBlank(passport)) {
+            return false;
+        }
+        return PassportPredicate.INSTANCE.apply(passport);
+    }
+
+    /**
+     * 身份证格式校验。 支持15位和18位。
+     *
+     * @param certNo
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isCertNo(String certNo) {
+        if (StringUtils.isBlank(certNo)) {
+            return false;
+        }
+        return CertNoPredicate.INSTANCE.apply(certNo);
+    }
+
+    /**
+     * 营业执照号格式验证。  营业执照格式:前后不能有空格，满足数字、字母、中文、长度不限
+     *
+     * @param businessNo
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isBusinessNo(String businessNo) {
+        if (StringUtils.isBlank(businessNo)) {
+            return false;
+        }
+        return BusinessNoPredicate.INSTANCE.apply(businessNo);
+    }
+
+    /**
+     * 组织结构代码格式校验。 组织机构代码格式：9位数字或字母组成，且最后一位必须是数字或字母
+     *
+     * @param organizationCode
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isOrganizationCode(String organizationCode) {
+        if (StringUtils.isBlank(organizationCode)) {
+            return false;
+        }
+        return OrganizationCodePredicate.INSTANCE.apply(organizationCode);
+    }
+
+    /**
+     * 经营范围格式校验。
+     * <ul>
+     * <li>不支持全数字</li>
+     * <li>不支持全字母</li>
+     * <li>不支持全符号</li>
+     * <li>不能包含"无"字样</li>
+     * </ul>
+     *
+     * @param businessScope
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isBusinessScope(String businessScope) {
+        if (StringUtils.isBlank(businessScope)) {
+            return false;
+        }
+        return BusinessScopePredicate.INSTANCE.apply(businessScope);
+    }
+
+    /**
+     * 地址格式校验。
+     * <ul>
+     * <li>不支持全数字</li>
+     * <li>不支持非字符串（•~！@$%^<>?&*）字符</li>
+     * <li>不支持相同字符(如"哈哈哈")</li>
+     * </ul>
+     *
+     * @param address
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isAddress(String address) {
+        if (StringUtils.isBlank(address)) {
+            return false;
+        }
+        return AddressPredicate.INSTANCE.apply(address);
+    }
+
+    /**
+     * 企业名字格式校验。
+     * <ul>
+     * <li>不支持全数字</li>
+     * <li>不支持邮箱格式的名称</li>
+     * <li>不支持名称里面包含"测试"、"反共产党"、"验证"</li>
+     * <li>不支持非字符串（•~！@$%^<>?&*）字符</li>
+     * <li>不支持相同字符(如"哈哈哈哈")</li>
+     * </ul>
+     *
+     * @param enterpriseRealName
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isEnterpriseRealName(String enterpriseRealName) {
+        if (StringUtils.isBlank(enterpriseRealName)) {
+            return false;
+        }
+        return EnterpriseRealNamePredicate.INSTANCE.apply(enterpriseRealName);
+    }
+
+    /**
+     * 个人名字格式校验。
+     * <ul>
+     * <li>不支持全数字</li>
+     * <li>不支持邮箱格式的名称</li>
+     * <li>不支持名称里面包含"测试"、"验证"</li>
+     * <li>不支持非字符串（•~！@$%^<>?&*）字符</li>
+     * <li>不支持相同字符(如"哈哈哈哈")</li>
+     * <li>当姓名为纯中文时，校验前、中、后空格，反之则校验前、后空格</li>
+     * <li>不能包含"公司"字样</li>
+     * </ul>
+     *
+     * @param personRealName
+     * @return 符合条件, 返回<code>true</code>
+     */
+    public static boolean isPersonRealName(String personRealName) {
+        if (StringUtils.isBlank(personRealName)) {
+            return false;
+        }
+        return PersonRealNamePredicate.INSTANCE.apply(personRealName);
+    }
+
+    /**
+     * 检查字符串是否不是<code>null</code>和空字符串<code>""</code>。
+     * <p/>
+     *
+     * <pre>
+     * StringUtils.isNotEmpty(null)      = false
+     * StringUtils.isNotEmpty("")        = false
+     * StringUtils.isNotEmpty(" ")       = true
+     * StringUtils.isNotEmpty("bob")     = true
+     * StringUtils.isNotEmpty("  bob  ") = true
+     * </pre>
+     *
+     * @param str 要检查的字符串
+     * @return 如果不为空, 则返回<code>true</code>
+     */
+    public static boolean isNotEmpty(String str) {
+        return ((str != null) && (str.length() > 0));
+    }
+
+    /**
+     * 检查字符串是否是空白：<code>null</code>、空字符串<code>""</code>或只有空白字符。
+     * <p/>
+     *
+     * <pre>
+     * StringUtils.isBlank(null)      = true
+     * StringUtils.isBlank("")        = true
+     * StringUtils.isBlank(" ")       = true
+     * StringUtils.isBlank("bob")     = false
+     * StringUtils.isBlank("  bob  ") = false
+     * </pre>
+     *
+     * @param str 要检查的字符串
+     * @return 如果为空白, 则返回<code>true</code>
+     */
+    public static boolean isBlank(String str) {
+        int length;
+
+        if ((str == null) || ((length = str.length()) == 0)) {
+            return true;
+        }
+
+        for (int i = 0; i < length; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 检查字符串是否不是空白：<code>null</code>、空字符串<code>""</code>或只有空白字符。
+     * <p/>
+     *
+     * <pre>
+     * StringUtils.isNotBlank(null)      = false
+     * StringUtils.isNotBlank("")        = false
+     * StringUtils.isNotBlank(" ")       = false
+     * StringUtils.isNotBlank("bob")     = true
+     * StringUtils.isNotBlank("  bob  ") = true
+     * </pre>
+     *
+     * @param str 要检查的字符串
+     * @return 如果为空白, 则返回<code>true</code>
+     */
+    public static boolean isNotBlank(String str) {
+        int length;
+
+        if ((str == null) || ((length = str.length()) == 0)) {
+            return false;
+        }
+
+        for (int i = 0; i < length; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 参数中有一个参数为null或者空白，返回true
+     *
+     * @param str
+     * @return
+     */
+    public static boolean hasBlank(String... str) {
+        if (str == null) {
+            return true;
+        }
+        for (int i = 0; i < str.length; i++) {
+            if (isBlank(str[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 校验字符串中是否存在空格字符。 入参为空或者格式匹配或者是空串，返回true
+     *
+     * @param str
+     * @return
+     */
+    public static boolean hasBlankInString(String str) {
+
+        return BlankInStringPredicate.INSTANCE.apply(str);
+    }
+
+    /**
+     * 校验字符串中是否存在前后空格字符。 入参为空或者格式匹配或者是空串，返回true
+     *
+     * @param str
+     * @return
+     */
+    public static boolean hasPreOrSuffBlankInString(String str) {
+
+        return BlankInStringPreOrSuffPredicate.INSTANCE.apply(str);
+    }
+
+    /**
+	 * ==========================================================================
+	 * 默认值函数。
+	 * 当字符串为null、empty或blank时，将字符串转换成指定的默认字符串
+	 *
+	 * ==========================================================================
+	 */
+
+    /**
+     * 如果字符串是<code>null</code>，则返回空字符串<code>""</code>，否则返回字符串本身。
+     *
+     * <pre>
+     * StringUtils.defaultIfNull(null)  = ""
+     * StringUtils.defaultIfNull("")    = ""
+     * StringUtils.defaultIfNull("  ")  = "  "
+     * StringUtils.defaultIfNull("bat") = "bat"
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @return 字符串本身或空字符串<code>""</code>
+     */
+    public static String defaultIfNull(String str) {
+        return (str == null) ? EMPTY_STRING : str;
+    }
+
+    /**
+     * 如果字符串是<code>null</code>，则返回指定默认字符串，否则返回字符串本身。
+     *
+     * <pre>
+     * StringUtils.defaultIfNull(null, "default")  = "default"
+     * StringUtils.defaultIfNull("", "default")    = ""
+     * StringUtils.defaultIfNull("  ", "default")  = "  "
+     * StringUtils.defaultIfNull("bat", "default") = "bat"
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @param defaultStr 默认字符串
+     * @return 字符串本身或指定的默认字符串
+     */
+    public static String defaultIfNull(String str, String defaultStr) {
+        return (str == null) ? defaultStr : str;
+    }
+
+    /**
+     * 如果字符串是<code>null</code>或空字符串<code>""</code>，则返回空字符串<code>""</code>
+     * ，否则返回字符串本身。
+     * 此方法实际上和<code>defaultIfNull(String)</code>等效。
+     *
+     * <pre>
+     * StringUtils.defaultIfEmpty(null)  = ""
+     * StringUtils.defaultIfEmpty("")    = ""
+     * StringUtils.defaultIfEmpty("  ")  = "  "
+     * StringUtils.defaultIfEmpty("bat") = "bat"
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @return 字符串本身或空字符串<code>""</code>
+     */
+    public static String defaultIfEmpty(String str) {
+        return (str == null) ? EMPTY_STRING : str;
+    }
+
+    /**
+     * 如果字符串是<code>null</code>或空字符串<code>""</code>，则返回指定默认字符串，否则返回字符串本身。
+     *
+     * <pre>
+     * StringUtils.defaultIfEmpty(null, "default")  = "default"
+     * StringUtils.defaultIfEmpty("", "default")    = "default"
+     * StringUtils.defaultIfEmpty("  ", "default")  = "  "
+     * StringUtils.defaultIfEmpty("bat", "default") = "bat"
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @param defaultStr 默认字符串
+     * @return 字符串本身或指定的默认字符串
+     */
+    public static String defaultIfEmpty(String str, String defaultStr) {
+        return ((str == null) || (str.length() == 0)) ? defaultStr : str;
+    }
+
+    /**
+     * 如果字符串是空白：<code>null</code>、空字符串<code>""</code>或只有空白字符，则返回空字符串
+     * <code>""</code>，否则返回字符串本身。
+     *
+     * <pre>
+     * StringUtils.defaultIfBlank(null)  = ""
+     * StringUtils.defaultIfBlank("")    = ""
+     * StringUtils.defaultIfBlank("  ")  = ""
+     * StringUtils.defaultIfBlank("bat") = "bat"
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @return 字符串本身或空字符串<code>""</code>
+     */
+    public static String defaultIfBlank(String str) {
+        return isBlank(str) ? EMPTY_STRING : str;
+    }
+
+    /**
+     * 如果字符串是<code>null</code>或空字符串<code>""</code>，则返回指定默认字符串，否则返回字符串本身。
+     *
+     * <pre>
+     * StringUtils.defaultIfBlank(null, "default")  = "default"
+     * StringUtils.defaultIfBlank("", "default")    = "default"
+     * StringUtils.defaultIfBlank("  ", "default")  = "default"
+     * StringUtils.defaultIfBlank("bat", "default") = "bat"
+     * </pre>
+     *
+     * @param str 要转换的字符串
+     * @param defaultStr 默认字符串
+     * @return 字符串本身或指定的默认字符串
+     */
+    public static String defaultIfBlank(String str, String defaultStr) {
+        return isBlank(str) ? defaultStr : str;
+    }
 
 }
