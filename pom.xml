@@ -8,6 +8,13 @@
   <name>common-util Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <spring.version>4.2.6.RELEASE</spring.version>
+
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -32,6 +39,12 @@
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <version>1.5.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.version}</version>
     </dependency>
 
   </dependencies>
