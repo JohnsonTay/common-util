@@ -2747,6 +2747,30 @@ public class StringUtils {
 
     /**
      * 比较两个字符串（大小写敏感）。
+     * <p/>
+     *
+     * <pre>
+     * StringUtils.equals(null, null)   = true
+     * StringUtils.equals(null, "abc")  = false
+     * StringUtils.equals("abc", null)  = false
+     * StringUtils.equals("abc", "abc") = true
+     * StringUtils.equals("abc", "ABC") = false
+     * </pre>
+     *
+     * @param str1 要比较的字符串1
+     * @param str2 要比较的字符串2
+     * @return 如果两个字符串相同，或者都是<code>null</code>，则返回<code>true</code>
+     */
+    public static boolean equals(String str1, String str2) {
+        if (str1 == null) {
+            return str2 == null;
+        }
+
+        return str1.equals(str2);
+    }
+
+    /**
+     * 比较两个字符串（大小写敏感）。
      *
      * <pre>
      * StringUtils.equals(null, null)   = false
