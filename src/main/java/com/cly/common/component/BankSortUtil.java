@@ -32,7 +32,7 @@ public class BankSortUtil {
             for(NetBankInfo bankInfo: bankInfos){
                 if(StringUtils.equals(key, "热门") && commonBankCodes.contains(bankInfo.getBankCode())){
                     NetBankInfo info = new NetBankInfo();
-                    Copier.copy(bankInfo, info);
+//                    Copier.copy(bankInfo, info);
                     info.setBankCode(bankInfo.getBankCode());
                     list.add(info);
                     continue;
@@ -43,7 +43,7 @@ public class BankSortUtil {
                 for(String a : chars){
                     if(StringUtils.equals(a, pyStr)){
                         NetBankInfo info = new NetBankInfo();
-                        Copier.copy(bankInfo, info);
+//                        Copier.copy(bankInfo, info);
                         info.setBankCode(bankInfo.getBankCode());
                         list.add(info);
                     }
@@ -67,7 +67,7 @@ public class BankSortUtil {
                         "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
                 };
         for(String a: chars){
-            List<String> list = new ArrayList<>();
+            List<String> list = new ArrayList<String>();
             for(int i=0; i< sources.size();i++){//为了排序都返回大写字母
                 if(a.equals(getPYIndexStr(sources.get(i), true, true))){
                     list.add(sources.get(i));
@@ -270,12 +270,10 @@ public class BankSortUtil {
         keys.add("T,W,X,Y");
         keys.add("Z");
 
-        Map map = BankSortUtil.sort(keys, );
+        List<Map<String, List<NetBankInfo>>> map = BankSortUtil.sort(keys, new ArrayList<NetBankInfo>());
 
         System.out.println(map);
 
-//        String str = "重庆";
-//        System.out.println("中文首字母："+getPYIndexStr(str, true, true));
     }
 
 }
