@@ -9,6 +9,7 @@
   <url>http://maven.apache.org</url>
 
   <dependencies>
+    <!-- 单元测试组件 -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
